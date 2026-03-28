@@ -1,0 +1,19 @@
+name: Sincronización Automática a Cuenta B
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  push-to-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar mi código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clonar en Cuenta B
+        run: |
+          git push --force https://${{ secrets.Token_Cuenta_B }}@github.com/EngelRomeroViperB/meridian-mi-app.git main
