@@ -16,4 +16,4 @@ jobs:
 
       - name: Clonar en Cuenta B
         run: |
-          git push --force https://${{ secrets.Token_Cuenta_B }}@github.com/EngelRomeroViperB/meridian-mi-app.git main
+          git push --force https://${{ secrets.TOKEN_CUENTA_B }}@github.com/EngelRomeroViperB/meridian-mi-app.git main
