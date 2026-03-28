@@ -89,7 +89,11 @@ export const es = {
     editTransaction: "Editar transacción",
     deleteTransaction: "Eliminar transacción",
     allProjects: "Todos los proyectos",
-    selectChannel: "Seleccionar canal"
+    selectChannel: "Seleccionar canal",
+    useExisting: "Elegir",
+    createNew: "Nuevo",
+    newProjectPlaceholder: "Nuevo proyecto",
+    newChannelPlaceholder: "Nuevo canal"
   },
   streak: {
     title: "Streak",

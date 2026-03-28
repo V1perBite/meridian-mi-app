@@ -91,7 +91,11 @@ export const en: Dictionary = {
     editTransaction: "Edit transaction",
     deleteTransaction: "Delete transaction",
     allProjects: "All projects",
-    selectChannel: "Select channel"
+    selectChannel: "Select channel",
+    useExisting: "Select",
+    createNew: "New",
+    newProjectPlaceholder: "New project",
+    newChannelPlaceholder: "New channel"
   },
   streak: {
     title: "Streak",

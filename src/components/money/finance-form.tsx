@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useLocale } from "@/lib/hooks/use-locale";
@@ -31,29 +31,49 @@ export function FinanceForm({
   isLoading
 }: FinanceFormProps) {
   const { t } = useLocale();
+  const [projectMode, setProjectMode] = useState<"existing" | "new">("existing");
+  const [channelMode, setChannelMode] = useState<"existing" | "new">("existing");
+  const hasProjectOptions = projectOptions.length > 0;
+  const hasChannelOptions = channelOptions.length > 0;
 
-  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<CreateFinanceInput>({
+  const { register, handleSubmit, reset, watch, setValue, getValues, formState: { errors } } = useForm<CreateFinanceInput>({
     resolver: zodResolver(createFinanceSchema),
     defaultValues: { type: "income", date: getTodayStringBogota() }
   });
 
   const type = watch("type");
+  const projectValue = watch("project") ?? "";
+  const channelValue = watch("channel") ?? "";
+
+  function isInOptions(value: string | null | undefined, options: string[]) {
+    const normalized = value?.trim().toLowerCase();
+    if (!normalized) return false;
+    return options.some((option) => option.trim().toLowerCase() === normalized);
+  }
 
   useEffect(() => {
     if (open && initialData) {
+      const initialProject = initialData.project ?? "";
+      const initialChannel = initialData.channel ?? "";
+
+      setProjectMode(hasProjectOptions && isInOptions(initialProject, projectOptions) ? "existing" : "new");
+      setChannelMode(hasChannelOptions && isInOptions(initialChannel, channelOptions) ? "existing" : "new");
+
       reset({
         type: initialData.type,
         amount: initialData.amount,
-        project: initialData.project ?? "",
-        channel: initialData.channel ?? undefined,
+        project: initialProject,
+        channel: initialChannel,
         category: initialData.category ?? "",
         note: initialData.note ?? "",
         date: initialData.date
       });
     } else if (open) {
-      reset({ type: "income", amount: 0, date: getTodayStringBogota() });
+      setProjectMode(hasProjectOptions ? "existing" : "new");
+      setChannelMode(hasChannelOptions ? "existing" : "new");
+      reset({ type: "income", amount: 0, project: "", channel: "", date: getTodayStringBogota() });
     }
-  }, [open, initialData, reset]);
+  }, [open, initialData, reset, hasProjectOptions, hasChannelOptions, projectOptions, channelOptions]);
 
   if (!open) return null;
 
@@ -114,37 +134,124 @@ export function FinanceForm({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-zinc-300">{t("money.project")}</label>
-              <input
-                type="text"
-                placeholder={t("common.optional")}
-                list="money-project-options"
-                className="w-full rounded-xl border border-zinc-700 bg-background px-3 py-2.5 text-sm placeholder:text-zinc-500 focus:border-accent focus:outline-none"
-                {...register("project")}
-              />
-              <datalist id="money-project-options">
-                {projectOptions.map((project) => (
-                  <option key={project} value={project} />
-                ))}
-              </datalist>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-zinc-300">{t("money.project")}</label>
+                <div className="flex rounded-lg border border-zinc-700 p-0.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!hasProjectOptions) return;
+                      setProjectMode("existing");
+                      const currentValue = (getValues("project") ?? "").trim();
+                      const matched = projectOptions.find((option) => option.trim().toLowerCase() === currentValue.toLowerCase());
+                      setValue("project", matched ?? "", { shouldDirty: true, shouldValidate: true });
+                    }}
+                    disabled={!hasProjectOptions}
+                    className={cn(
+                      "rounded-md px-2 py-1 transition",
+                      projectMode === "existing" ? "bg-zinc-700 text-white" : "text-zinc-400",
+                      !hasProjectOptions && "cursor-not-allowed opacity-50"
+                    )}
+                  >
+                    {t("money.useExisting")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setProjectMode("new")}
+                    className={cn(
+                      "rounded-md px-2 py-1 transition",
+                      projectMode === "new" ? "bg-zinc-700 text-white" : "text-zinc-400"
+                    )}
+                  >
+                    {t("money.createNew")}
+                  </button>
+                </div>
+              </div>
+              {projectMode === "existing" && hasProjectOptions ? (
+                <select
+                  value={projectValue}
+                  onChange={(event) => setValue("project", event.target.value, { shouldDirty: true, shouldValidate: true })}
+                  className="w-full rounded-xl border border-zinc-700 bg-background px-3 py-2.5 text-sm text-white focus:border-accent focus:outline-none"
+                >
+                  <option value="">{t("common.optional")}</option>
+                  {projectOptions.map((project) => (
+                    <option key={project} value={project}>
+                      {project}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={projectValue}
+                  onChange={(event) => setValue("project", event.target.value, { shouldDirty: true, shouldValidate: true })}
+                  placeholder={t("money.newProjectPlaceholder")}
+                  className="w-full rounded-xl border border-zinc-700 bg-background px-3 py-2.5 text-sm placeholder:text-zinc-500 focus:border-accent focus:outline-none"
+                />
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-zinc-300">{t("money.channel")}</label>
-              <input
-                type="text"
-                list="money-channel-options"
-                placeholder={t("common.optional")}
-                className="w-full rounded-xl border border-zinc-700 bg-background px-3 py-2.5 text-sm text-white focus:border-accent focus:outline-none"
-                {...register("channel")}
-              />
-              <datalist id="money-channel-options">
-                {channelOptions.map((channel) => (
-                  <option key={channel} value={channel} />
-                ))}
-              </datalist>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-zinc-300">{t("money.channel")}</label>
+                <div className="flex rounded-lg border border-zinc-700 p-0.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!hasChannelOptions) return;
+                      setChannelMode("existing");
+                      const currentValue = (getValues("channel") ?? "").trim();
+                      const matched = channelOptions.find((option) => option.trim().toLowerCase() === currentValue.toLowerCase());
+                      setValue("channel", matched ?? "", { shouldDirty: true, shouldValidate: true });
+                    }}
+                    disabled={!hasChannelOptions}
+                    className={cn(
+                      "rounded-md px-2 py-1 transition",
+                      channelMode === "existing" ? "bg-zinc-700 text-white" : "text-zinc-400",
+                      !hasChannelOptions && "cursor-not-allowed opacity-50"
+                    )}
+                  >
+                    {t("money.useExisting")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChannelMode("new")}
+                    className={cn(
+                      "rounded-md px-2 py-1 transition",
+                      channelMode === "new" ? "bg-zinc-700 text-white" : "text-zinc-400"
+                    )}
+                  >
+                    {t("money.createNew")}
+                  </button>
+                </div>
+              </div>
+              {channelMode === "existing" && hasChannelOptions ? (
+                <select
+                  value={channelValue}
+                  onChange={(event) => setValue("channel", event.target.value, { shouldDirty: true, shouldValidate: true })}
+                  className="w-full rounded-xl border border-zinc-700 bg-background px-3 py-2.5 text-sm text-white focus:border-accent focus:outline-none"
+                >
+                  <option value="">{t("common.optional")}</option>
+                  {channelOptions.map((channel) => (
+                    <option key={channel} value={channel}>
+                      {channel}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={channelValue}
+                  onChange={(event) => setValue("channel", event.target.value, { shouldDirty: true, shouldValidate: true })}
+                  placeholder={t("money.newChannelPlaceholder")}
+                  className="w-full rounded-xl border border-zinc-700 bg-background px-3 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-accent focus:outline-none"
+                />
+              )}
             </div>
           </div>
+
+          <input type="hidden" {...register("project")} />
+          <input type="hidden" {...register("channel")} />
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-zinc-300">{t("money.note")}</label>
