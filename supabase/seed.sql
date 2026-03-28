@@ -1,0 +1,2 @@
+-- Seed opcional para desarrollo.
+-- No insertar auth.users desde aqui; usar usuarios reales de Supabase Auth.
