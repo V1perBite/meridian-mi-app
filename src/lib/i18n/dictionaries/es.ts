@@ -116,6 +116,10 @@ export const es = {
   },
   dashboard: {
     title: "Inicio",
+    quickStartTitle: "¿Qué quieres hacer ahora?",
+    quickStartSubtitle: "Empieza en un toque y mantén el ritmo.",
+    quickHabitCta: "Trackear hábito",
+    quickMoneyCta: "Registrar transacción",
     todayTasks: "Tareas de hoy",
     completedTasks: "Completadas",
     pendingTasks: "Pendientes",

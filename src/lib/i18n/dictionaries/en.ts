@@ -118,6 +118,10 @@ export const en: Dictionary = {
   },
   dashboard: {
     title: "Home",
+    quickStartTitle: "What do you want to do now?",
+    quickStartSubtitle: "Start in one tap and keep your momentum.",
+    quickHabitCta: "Track habit",
+    quickMoneyCta: "Log transaction",
     todayTasks: "Today's tasks",
     completedTasks: "Completed",
     pendingTasks: "Pending",

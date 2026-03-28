@@ -132,11 +132,11 @@ export function FinanceForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <label className="text-sm font-medium text-zinc-300">{t("money.project")}</label>
-                <div className="flex rounded-lg border border-zinc-700 p-0.5 text-xs">
+                <div className="grid grid-cols-2 rounded-xl border border-zinc-700 bg-background p-1 text-xs">
                   <button
                     type="button"
                     onClick={() => {
@@ -148,8 +148,10 @@ export function FinanceForm({
                     }}
                     disabled={!hasProjectOptions}
                     className={cn(
-                      "rounded-md px-2 py-1 transition",
-                      projectMode === "existing" ? "bg-zinc-700 text-white" : "text-zinc-400",
+                      "rounded-lg px-2.5 py-1.5 font-medium transition",
+                      projectMode === "existing"
+                        ? "bg-accent text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)]"
+                        : "text-zinc-400 hover:text-zinc-200",
                       !hasProjectOptions && "cursor-not-allowed opacity-50"
                     )}
                   >
@@ -159,8 +161,10 @@ export function FinanceForm({
                     type="button"
                     onClick={() => setProjectMode("new")}
                     className={cn(
-                      "rounded-md px-2 py-1 transition",
-                      projectMode === "new" ? "bg-zinc-700 text-white" : "text-zinc-400"
+                      "rounded-lg px-2.5 py-1.5 font-medium transition",
+                      projectMode === "new"
+                        ? "bg-accent text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)]"
+                        : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
                     {t("money.createNew")}
@@ -192,9 +196,9 @@ export function FinanceForm({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <label className="text-sm font-medium text-zinc-300">{t("money.channel")}</label>
-                <div className="flex rounded-lg border border-zinc-700 p-0.5 text-xs">
+                <div className="grid grid-cols-2 rounded-xl border border-zinc-700 bg-background p-1 text-xs">
                   <button
                     type="button"
                     onClick={() => {
@@ -206,8 +210,10 @@ export function FinanceForm({
                     }}
                     disabled={!hasChannelOptions}
                     className={cn(
-                      "rounded-md px-2 py-1 transition",
-                      channelMode === "existing" ? "bg-zinc-700 text-white" : "text-zinc-400",
+                      "rounded-lg px-2.5 py-1.5 font-medium transition",
+                      channelMode === "existing"
+                        ? "bg-accent text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)]"
+                        : "text-zinc-400 hover:text-zinc-200",
                       !hasChannelOptions && "cursor-not-allowed opacity-50"
                     )}
                   >
@@ -217,8 +223,10 @@ export function FinanceForm({
                     type="button"
                     onClick={() => setChannelMode("new")}
                     className={cn(
-                      "rounded-md px-2 py-1 transition",
-                      channelMode === "new" ? "bg-zinc-700 text-white" : "text-zinc-400"
+                      "rounded-lg px-2.5 py-1.5 font-medium transition",
+                      channelMode === "new"
+                        ? "bg-accent text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)]"
+                        : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
                     {t("money.createNew")}
