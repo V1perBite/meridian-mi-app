@@ -6,6 +6,10 @@ export interface DashboardStats {
   monthIncome: number;
   monthExpense: number;
   weekHabitConsistency: number;
+  todayIncome: number;
+  todayExpense: number;
+  activeHabits: number;
+  habitsDoneToday: number;
   financeTrend: { date: string; income: number; expense: number }[];
 }
 
@@ -23,7 +27,7 @@ export async function fetchDashboardStats(
     await Promise.all([
       supabase
         .from("finances")
-        .select("type, amount")
+        .select("type, amount, date")
         .eq("user_id", userId)
         .gte("date", monthStart),
       supabase.from("habits").select("id").eq("user_id", userId).eq("active", true),
@@ -54,6 +58,17 @@ export async function fetchDashboardStats(
   const weekHabitConsistency =
     habitCount > 0 ? Math.round((uniqueLogDays / (habitCount * 7)) * 100) : 0;
 
+  const todayIncome = monthFinances
+    .filter((f) => f.date === today && f.type === "income")
+    .reduce((s, f) => s + Number(f.amount), 0);
+  const todayExpense = monthFinances
+    .filter((f) => f.date === today && f.type === "expense")
+    .reduce((s, f) => s + Number(f.amount), 0);
+
+  const habitsDoneToday = new Set(
+    weekLogs.filter((l) => l.date === today).map((l) => l.habit_id)
+  ).size;
+
   const financeByDay: Record<string, { income: number; expense: number }> = {};
   for (const f of financeTrendRes.data ?? []) {
     const d = f.date as string;
@@ -67,6 +82,10 @@ export async function fetchDashboardStats(
     monthIncome,
     monthExpense,
     weekHabitConsistency,
+    todayIncome,
+    todayExpense,
+    activeHabits: habitCount,
+    habitsDoneToday,
     financeTrend
   };
 }

@@ -91,6 +91,10 @@ export const en: Dictionary = {
     editTransaction: "Edit transaction",
     deleteTransaction: "Delete transaction",
     allProjects: "All projects",
+    filterToday: "Today",
+    filterWeek: "Week",
+    filterMonth: "Month",
+    filterAll: "All",
     selectChannel: "Select channel",
     useExisting: "Select",
     createNew: "New",
@@ -114,7 +118,9 @@ export const en: Dictionary = {
     editHabit: "Edit habit",
     deleteHabit: "Delete habit",
     active: "Active",
-    inactive: "Inactive"
+    inactive: "Inactive",
+    reminderTitle: "You can still complete your habits",
+    reminderDesc: "You still have {{count}} to check today."
   },
   dashboard: {
     title: "Home",
@@ -122,6 +128,9 @@ export const en: Dictionary = {
     quickStartSubtitle: "Start in one tap and keep your momentum.",
     quickHabitCta: "Track habit",
     quickMoneyCta: "Log transaction",
+    dailySummary: "Today summary",
+    todayBalance: "Today's balance",
+    habitsToday: "Habits today",
     todayTasks: "Today's tasks",
     completedTasks: "Completed",
     pendingTasks: "Pending",

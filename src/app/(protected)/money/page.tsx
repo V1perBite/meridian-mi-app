@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { ErrorState } from "@/components/common/error-state";
@@ -16,6 +16,7 @@ import type { Finance } from "@/lib/types/domain";
 import type { FinanceRow } from "@/lib/types/database";
 import type { ApiResponse } from "@/lib/types/api";
 import type { CreateFinanceInput } from "@/lib/validations/finance.schema";
+import { getTodayStringBogota, subtractDays } from "@/lib/utils/date";
 import { formatCurrency } from "@/lib/utils/number";
 import { cn } from "@/lib/utils/classnames";
 
@@ -33,6 +34,7 @@ export default function MoneyPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingFinance, setEditingFinance] = useState<Finance | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [rangeFilter, setRangeFilter] = useState<"all" | "today" | "week" | "month">("month");
 
   const { data: finances = [], isLoading, isError, refetch } = useQuery<Finance[]>({
     queryKey: ["finances"],
@@ -67,8 +69,20 @@ export default function MoneyPage() {
     }
   }
 
-  const totalIncome = finances.filter((f) => f.type === "income").reduce((s, f) => s + f.amount, 0);
-  const totalExpense = finances.filter((f) => f.type === "expense").reduce((s, f) => s + f.amount, 0);
+  const filteredFinances = useMemo(() => {
+    const today = getTodayStringBogota();
+    if (rangeFilter === "all") return finances;
+    if (rangeFilter === "today") return finances.filter((finance) => finance.date === today);
+    if (rangeFilter === "week") {
+      const weekStart = subtractDays(today, 6);
+      return finances.filter((finance) => finance.date >= weekStart && finance.date <= today);
+    }
+    const monthStart = `${today.slice(0, 7)}-01`;
+    return finances.filter((finance) => finance.date >= monthStart && finance.date <= today);
+  }, [finances, rangeFilter]);
+
+  const totalIncome = filteredFinances.filter((f) => f.type === "income").reduce((s, f) => s + f.amount, 0);
+  const totalExpense = filteredFinances.filter((f) => f.type === "expense").reduce((s, f) => s + f.amount, 0);
   const balance = totalIncome - totalExpense;
   const projectOptions = Array.from(
     new Set(finances.map((finance) => finance.project?.trim()).filter(Boolean))
@@ -98,6 +112,28 @@ export default function MoneyPage() {
         </div>
       </div>
 
+      <div className="mb-4 flex flex-wrap gap-2">
+        {([
+          { id: "today", label: t("money.filterToday") },
+          { id: "week", label: t("money.filterWeek") },
+          { id: "month", label: t("money.filterMonth") },
+          { id: "all", label: t("money.filterAll") }
+        ] as const).map((option) => (
+          <button
+            key={option.id}
+            onClick={() => setRangeFilter(option.id)}
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-xs font-medium transition",
+              rangeFilter === option.id
+                ? "border-accent/70 bg-accent/20 text-accent"
+                : "border-zinc-700 text-zinc-400 hover:bg-zinc-800"
+            )}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
       <div className="mb-6 grid grid-cols-3 gap-3">
         {[
           { label: t("money.balance"), value: balance, cls: balance >= 0 ? "text-green-400" : "text-red-400" },
@@ -117,7 +153,7 @@ export default function MoneyPage() {
         <ErrorState onRetry={() => void refetch()} />
       ) : (
         <FinanceList
-          finances={finances}
+          finances={filteredFinances}
           onEdit={(f) => { setEditingFinance(f); setFormOpen(true); }}
           onDelete={(id) => setDeleteId(id)}
         />

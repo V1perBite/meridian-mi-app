@@ -14,6 +14,7 @@ import { useLocale } from "@/lib/hooks/use-locale";
 import type { Habit } from "@/lib/types/domain";
 import type { ApiResponse } from "@/lib/types/api";
 import type { CreateHabitInput } from "@/lib/validations/habit.schema";
+import { getTodayStringBogota } from "@/lib/utils/date";
 
 async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, options);
@@ -25,6 +26,7 @@ async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
 export default function StreakPage() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const today = getTodayStringBogota();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
@@ -67,6 +69,8 @@ export default function StreakPage() {
     }
   }
 
+  const pendingTodayCount = habits.filter((habit) => !(habit.logs ?? []).includes(today)).length;
+
   async function handleSubmit(data: CreateHabitInput) {
     if (editingHabit) {
       await updateMutation.mutateAsync({ id: editingHabit.id, data });
@@ -107,6 +111,15 @@ export default function StreakPage() {
         />
       ) : (
         <div className="flex flex-col gap-4">
+          {pendingTodayCount > 0 && (
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3">
+              <p className="text-sm font-medium text-amber-200">{t("streak.reminderTitle")}</p>
+              <p className="mt-1 text-xs text-amber-100/80">
+                {t("streak.reminderDesc", { count: pendingTodayCount })}
+              </p>
+            </div>
+          )}
+
           {habits.map((habit) => (
             <HabitCard
               key={habit.id}

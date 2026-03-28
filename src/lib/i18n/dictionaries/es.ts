@@ -89,6 +89,10 @@ export const es = {
     editTransaction: "Editar transacción",
     deleteTransaction: "Eliminar transacción",
     allProjects: "Todos los proyectos",
+    filterToday: "Hoy",
+    filterWeek: "Semana",
+    filterMonth: "Mes",
+    filterAll: "Todo",
     selectChannel: "Seleccionar canal",
     useExisting: "Elegir",
     createNew: "Nuevo",
@@ -112,7 +116,9 @@ export const es = {
     editHabit: "Editar hábito",
     deleteHabit: "Eliminar hábito",
     active: "Activo",
-    inactive: "Inactivo"
+    inactive: "Inactivo",
+    reminderTitle: "Aún puedes completar tus hábitos",
+    reminderDesc: "Te faltan {{count}} por marcar hoy."
   },
   dashboard: {
     title: "Inicio",
@@ -120,6 +126,9 @@ export const es = {
     quickStartSubtitle: "Empieza en un toque y mantén el ritmo.",
     quickHabitCta: "Trackear hábito",
     quickMoneyCta: "Registrar transacción",
+    dailySummary: "Resumen de hoy",
+    todayBalance: "Balance de hoy",
+    habitsToday: "Hábitos hoy",
     todayTasks: "Tareas de hoy",
     completedTasks: "Completadas",
     pendingTasks: "Pendientes",
